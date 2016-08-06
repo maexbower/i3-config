@@ -188,7 +188,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
 		id bar-1
-		status_command i3status -c /home/max/.config/i3/i3status.conf
+		status_command i3status -c /home/max/.config/.i3status.conf
         font pango:noto Sans 9
         colors {
 			background #000000
