@@ -15,13 +15,24 @@ set $mod Mod1
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 8
+#font pango:DejaVu Sans Mono 9
+#font pango:roboto Mono 9
+font pango:noto Sans 8
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
 # clear in small sizes. However, its unicode glyph coverage is limited, the old
 # X core fonts rendering does not support right-to-left and this being a bitmap
 # font, it doesn’t scale on retina/hidpi displays.
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #757575 #757575 #ffffff #757575   #285577
+client.focused_inactive #212121 #212121 #ffffff #212121   #5f676a
+client.unfocused        #000000 #000000 #888888 #000000   #222222
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+
+client.background       #ffffff
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -40,13 +51,19 @@ bindsym $mod+d exec dmenu_run
 bindsym $mod+Shift+d exec --no-startup-id i3-dmenu-desktop
 
 #Eigene Definionen
-bindsym --release Mod4+l exec /opt/lock/i3lock-fancy/lock
+bindsym --release Mod4+l exec light-locker-command -l
 bindsym --release $mod+e exec spacefm
+
+#definiere Floating Windows
+for_window [class="I3-exit"] floating enable
+for_window [class="^KeePass2$"] floating enable
+
+
 
 #Function Keys
 bindsym --release XF86AudioMute exec pacmd list-sinks | grep -A20 "index: 1" |grep -q muted:\ no && pacmd set-sink-mute 1 1 || pacmd set-sink-mute 1 0
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume 1 -- -2%
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 1 -- +2%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 1 -2%
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 1 +2%
 bindsym XF86MonBrightnessUp exec xbacklight -inc 5
 bindsym XF86MonBrightnessDown exec xbacklight -dec 5
 bindsym --release Print exec --no-startup-id scrot -zs ~/Bilder/Screenshot_$(date +%Y-%m-%d-%T)_screenshot.png
@@ -54,6 +71,8 @@ bindsym --release Mod1+Print exec --no-startup-id scrot -zm ~/Bilder/Screenshot_
 bindsym --release Shift+Print exec --no-startup-id scrot -zu ~/Bilder/Screenshot_$(date +%Y-%m-%d-%T)_screenshot.png
 #bindsym --release XF86Display
 #bindsym --release XF86WebCam
+#bindsym --release XF86TouchpadToggle
+bindsym --release XF86Sleep exec /opt/i3-exit/i3-exit
 #bindsym --release XF86TouchpadToggle
 
 
@@ -136,7 +155,8 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec /opt/i3-exit/i3-exit
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -167,16 +187,33 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
+		id bar-1
+		status_command i3status -c /home/max/.config/.i3status.conf
+        font pango:noto Sans 9
+        colors {
+			background #000000
+			statusline #ffffff
+			separator #666666
+
+			focused_workspace  #4c7899 #285577 #ffffff
+			active_workspace   #333333 #5f676a #ffffff
+			inactive_workspace #333333 #222222 #888888
+			urgent_workspace   #2f343a #900000 #ffffff
+			binding_mode       #2f343a #900000 #ffffff
+		}
 #	status_command i3bar
 }
 
 #Autostart:
 exec_always --no-startup-id owncloud
-exec_always --no-startup-id touchegg
-exec --no-startup-id synclient ClickFinger2=0 ClickFinger3=0 TouchButton2=0 TouchButton3=0
-exec --no-startup-id wicd-client -t
+#exec_always --no-startup-id touchegg
+#exec_always --no-startup-id /home/max/Owncloud/Dokumente/privat/Projekte/lightsOn/lightsOn.sh 5 >> /var/log/lightson.log
+#exec --no-startup-id synclient ClickFinger2=0 ClickFinger3=0 TouchButton2=0 TouchButton3=0
+exec --no-startup-id nm-applet
 exec --no-startup-id pasystray
-#background
-exec_always --no-startup-id feh --bg-fill /usr/share/images/backgrounds/galaxy_4-wallpaper-1920x1080.jpg
+exec --no-startup-id light-locker
 
+#background
+exec_always --no-startup-id feh --bg-fill /opt/bgimages/sea_rocks_beach_summer_84638_1920x1080.jpg
+exec_always --no-startup-id /usr/lib/notification-daemon-1.0/notification-daemon
+exec_always --no-startup-id /usr/bin/aarchup --loop-time 30 -c "yaourt -Qua" --icon /usr/share/aarchup/archlogo.svg
